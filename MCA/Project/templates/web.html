@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Programming - Course</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .modules-container {
+            background: #f9f9f9;
+            border-radius: 12px;
+            border: 3px solid #e44d26;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .module-card {
+            margin: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .module-header {
+            padding: 15px;
+            background: #e44d26;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .module-header:hover {
+            background: #d13d22;
+        }
+        .toggle-icon {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+        .lessons-container {
+            padding: 15px;
+        }
+        .lesson-btn {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            border: 2px solid #e44d26;
+            color: #e44d26;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .lesson-btn:hover {
+            background: #ffe8e0;
+            transform: translateX(5px);
+        }
+        .lesson-btn.completed {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        .progress-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .progress-bar-bg {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e44d26, #f1662a);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-weight: bold;
+        }
+        .lesson-display {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            border-left: 5px solid #e44d26;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+        .subscribe-btn {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .subscribe-btn:hover {
+            background: #218838;
+        }
+        .payment-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .payment-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e44d26;
+            padding-bottom: 15px;
+        }
+        .modal-header h2 {
+            color: #e44d26;
+            margin: 0;
+        }
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #000;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .payment-methods {
+            margin-bottom: 20px;
+        }
+        .payment-method {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .payment-method input {
+            margin-right: 10px;
+            width: auto;
+        }
+        .payment-method.selected {
+            border-color: #e44d26;
+            background: #ffe8e0;
+        }
+        .pay-button {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .pay-button:hover {
+            background: #218838;
+        }
+        .price-display {
+            text-align: center;
+            font-size: 18px;
+            color: #e44d26;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #ffe8e0;
+            border-radius: 5px;
+        }
+        .price-display strong {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- HEADER -->
+<header class="subject-header" style="background: linear-gradient(135deg, #e44d26 0%, #f1662a 100%);">
+    <div class="header-container">
+        <div class="header-left">
+            <h3 class="academic-name">🌐 Web Programming</h3>
+        </div>
+        <div class="header-right">
+            <button class="subscribe-btn" onclick="openPaymentModal()">Enroll Now</button>
+            <a href="/dashboard" class="btn btn-light" style="margin-left: 10px;">← Back</a>
+        </div>
+    </div>
+</header>
+
+<!-- CONTENT -->
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <!-- MODULES SIDEBAR -->
+        <div class="col-md-4">
+            <h5 class="mb-3">📚 Course Modules</h5>
+            <div class="modules-container" id="modulesContainer">
+                <!-- Modules will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- LESSON DISPLAY -->
+        <div class="col-md-8">
+            <div class="progress-container mb-4">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressBar"></div>
+                </div>
+                <div class="progress-text" id="progressText">0/30 lessons completed</div>
+            </div>
+            <div class="lesson-display" id="lessonDisplay">
+                <h4 id="lessonTitle">Lesson Title</h4>
+                <div id="lessonContent">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="paymentModal" class="payment-modal">
+    <div class="modal-content">
+        <div class="modal-header"><h2>Enroll in Web Programming Course</h2><span class="close" onclick="closePaymentModal()">&times;</span></div>
+        <div class="price-display">Course Price: <strong>₹499</strong> / One-time payment</div>
+        <div class="payment-methods">
+            <h5>Select Payment Method:</h5>
+            <label class="payment-method"><input type="radio" name="payment" value="credit" checked onchange="selectPayment('credit')">💳 Credit Card</label>
+            <label class="payment-method"><input type="radio" name="payment" value="debit" onchange="selectPayment('debit')">🏦 Debit Card</label>
+            <label class="payment-method"><input type="radio" name="payment" value="upi" onchange="selectPayment('upi')">📱 UPI</label>
+            <label class="payment-method"><input type="radio" name="payment" value="netbanking" onchange="selectPayment('netbanking')">🏧 Net Banking</label>
+        </div>
+        <div id="paymentForm"></div>
+        <button class="pay-button" onclick="processPayment()">Complete Payment</button>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const webModules = [
+        {
+            title: "HTML & CSS Basics",
+            lessons: [
+                {title: "Web Development Basics", content: "Web Development Basics\n- Frontend vs Backend\n- Client-server model\n- HTTP/HTTPS\n- Static vs Dynamic websites\n- Web browsers"},
+                {title: "HTML Fundamentals", content: "HTML Fundamentals\n- HTML structure\n- Tags and elements\n- Attributes\n- Semantic HTML\n- HTML5 features"},
+                {title: "HTML Forms", content: "HTML Forms\n- Form elements\n- Input types\n- Text, password, checkbox, radio\n- Select and textarea\n- Form submission"},
+                {title: "CSS Basics", content: "CSS Basics\n- Selectors\n- Properties and values\n- Classes and IDs\n- Inline, internal, external CSS\n- Cascading"},
+                {title: "CSS Box Model", content: "CSS Box Model\n- Margin, border, padding\n- Width and height\n- Display property\n- Positioning\n- Z-index"},
+                {title: "CSS Flexbox", content: "CSS Flexbox\n- Flex container and items\n- Main and cross axis\n- Justify-content\n- Align-items\n- Flex-wrap"},
+                {title: "CSS Grid", content: "CSS Grid\n- Grid container and items\n- Grid lines and tracks\n- Grid template\n- Grid areas\n- Responsive grids"},
+                {title: "Responsive Design", content: "Responsive Design\n- Media queries\n- Mobile-first approach\n- Viewport meta tag\n- Breakpoints\n- Responsive images"}
+            ]
+        },
+        {
+            title: "JavaScript Fundamentals",
+            lessons: [
+                {title: "CSS Animations", content: "CSS Animations\n- Transitions\n- Keyframe animations\n- Transform property\n- 2D and 3D transforms\n- Animation timing"},
+                {title: "JavaScript Basics", content: "JavaScript Basics\n- Variables (var, let, const)\n- Data types\n- Operators\n- Conditional statements\n- Loops"},
+                {title: "Functions in JS", content: "Functions in JS\n- Function declaration\n- Function expression\n- Arrow functions\n- Parameters and return\n- Scope"},
+                {title: "Arrays & Objects", content: "Arrays & Objects\n- Array methods\n- Array iteration\n- Object creation\n- Object properties\n- Destructuring"},
+                {title: "DOM Manipulation", content: "DOM Manipulation\n- Selecting elements\n- getElementById, querySelector\n- Changing HTML content\n- Changing CSS\n- Adding/removing elements"},
+                {title: "Event Handling", content: "Event Handling\n- Event listeners\n- Event types\n- Event object\n- Event bubbling\n- Event delegation"},
+                {title: "Form Validation", content: "Form Validation\n- Client-side validation\n- Input validation\n- HTML5 validation\n- JavaScript validation\n- Error messages"},
+                {title: "Async JavaScript", content: "Async JavaScript\n- Callbacks\n- Promises\n- .then() and .catch()\n- Promise chaining\n- Error handling"}
+            ]
+        },
+        {
+            title: "Advanced Web Technologies",
+            lessons: [
+                {title: "Async/Await", content: "Async/Await\n- Async functions\n- Await keyword\n- Error handling with try/catch\n- Parallel execution\n- Best practices"},
+                {title: "Fetch API", content: "Fetch API\n- Making GET requests\n- Making POST requests\n- Headers and body\n- Response handling\n- Error handling"},
+                {title: "JSON", content: "JSON\n- JSON syntax\n- JSON.parse()\n- JSON.stringify()\n- Working with APIs\n- JSON vs JavaScript objects"},
+                {title: "APIs & REST", content: "APIs & REST\n- REST principles\n- HTTP methods (GET, POST, PUT, DELETE)\n- Status codes\n- Response headers\n- API documentation"},
+                {title: "Local Storage", content: "Local Storage\n- localStorage vs sessionStorage\n- Storing data\n- Retrieving data\n- Removing data\n- Use cases"},
+                {title: "Bootstrap Framework", content: "Bootstrap Framework\n- Layout system\n- Components\n- Utilities\n- Responsive classes\n- Customization"},
+                {title: "CSS Frameworks", content: "CSS Frameworks\n- Tailwind CSS\n- Material Design\n- Foundation\n- Preprocessors (Sass, Less)\n- Comparing frameworks"},
+                {title: "JavaScript Libraries", content: "JavaScript Libraries\n- jQuery basics\n- DOM manipulation with jQuery\n- AJAX with jQuery\n- Plugin ecosystem\n- When to use"}
+            ]
+        },
+        {
+            title: "Frameworks & Tools",
+            lessons: [
+                {title: "Introduction to Frameworks", content: "Introduction to Frameworks\n- React basics\n- Vue.js basics\n- Angular basics\n- Component concept\n- State management"},
+                {title: "Package Managers", content: "Package Managers\n- npm and yarn\n- Installing packages\n- package.json\n- Semantic versioning\n- scripts"},
+                {title: "Build Tools", content: "Build Tools\n- Webpack basics\n- Babel transpiler\n- Dev servers\n- Production builds\n- Code splitting"},
+                {title: "Version Control", content: "Version Control\n- Git basics\n- Commits and branches\n- Merging\n- Collaboration\n- GitHub/GitLab"},
+                {title: "Web Performance", content: "Web Performance\n- Optimization techniques\n- Lazy loading\n- Minification\n- Caching\n- Performance metrics"},
+                {title: "Security & Best Practices", content: "Security & Best Practices\n- XSS prevention\n- CSRF protection\n- Secure authentication\n- Code quality\n- Career development"}
+            ]
+        }
+    ];
+
+    let completedLessons = JSON.parse(localStorage.getItem('webProgress') || '[]');
+
+    function loadModules() {
+        const container = document.getElementById('modulesContainer');
+        webModules.forEach((module, moduleIndex) => {
+            const moduleDiv = document.createElement('div');
+            moduleDiv.className = 'module-card';
+            moduleDiv.innerHTML = `
+                <div class="module-header" onclick="toggleModule(${moduleIndex})">
+                    <h6>${module.title}</h6>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="lessons-container" id="lessons-${moduleIndex}" style="display: none;">
+                    ${module.lessons.map((lesson, lessonIndex) => `
+                        <button class="lesson-btn ${completedLessons.includes(`${moduleIndex}-${lessonIndex}`) ? 'completed' : ''}" onclick="loadLesson(${moduleIndex}, ${lessonIndex})">
+                            ${lesson.title}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(moduleDiv);
+        });
+    }
+
+    function toggleModule(moduleIndex) {
+        const lessonsDiv = document.getElementById(`lessons-${moduleIndex}`);
+        const icon = lessonsDiv.previousElementSibling.querySelector('.toggle-icon');
+        if (lessonsDiv.style.display === 'none') {
+            lessonsDiv.style.display = 'block';
+            icon.textContent = '▼';
+        } else {
+            lessonsDiv.style.display = 'none';
+            icon.textContent = '▶';
+        }
+    }
+
+    function loadLesson(moduleIndex, lessonIndex) {
+        const lesson = webModules[moduleIndex].lessons[lessonIndex];
+        document.getElementById('lessonTitle').textContent = lesson.title;
+        document.getElementById('lessonContent').innerHTML = lesson.content.replace(/\n/g, '<br>');
+        
+        // Mark as completed
+        const lessonId = `${moduleIndex}-${lessonIndex}`;
+        if (!completedLessons.includes(lessonId)) {
+            completedLessons.push(lessonId);
+            localStorage.setItem('webProgress', JSON.stringify(completedLessons));
+            updateProgress();
+            // Update button
+            const btn = document.querySelector(`[onclick="loadLesson(${moduleIndex}, ${lessonIndex})"]`);
+            btn.classList.add('completed');
+        }
+    }
+
+    function updateProgress() {
+        const totalLessons = webModules.reduce((sum, module) => sum + module.lessons.length, 0);
+        const progressPercent = (completedLessons.length / totalLessons) * 100;
+        document.getElementById('progressBar').style.width = progressPercent + '%';
+        document.getElementById('progressText').textContent = `${completedLessons.length}/${totalLessons} lessons completed`;
+    }
+
+    function openPaymentModal() {
+        document.getElementById('paymentModal').classList.add('show');
+        selectPayment('credit');
+    }
+
+    function closePaymentModal() {
+        document.getElementById('paymentModal').classList.remove('show');
+    }
+
+    function selectPayment(method) {
+        const form = document.getElementById('paymentForm');
+        if (method === 'credit' || method === 'debit') {
+            form.innerHTML = `<div class="form-group"><label>Cardholder Name</label><input type="text" placeholder="Enter name on card" required></div><div class="form-group"><label>Card Number</label><input type="text" placeholder="1234 5678 9012 3456" maxlength="19" required></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="form-group"><label>Expiry Date</label><input type="text" placeholder="MM/YY" maxlength="5" required></div><div class="form-group"><label>CVV</label><input type="text" placeholder="123" maxlength="3" required></div></div>`;
+        } else if (method === 'upi') {
+            form.innerHTML = `<div class="form-group"><label>UPI ID</label><input type="text" placeholder="yourname@bank" required></div><div style="text-align: center; padding: 20px; background: #f0f5ff; border-radius: 5px; margin: 15px 0;"><p style="margin: 0; color: #666;">Click "Complete Payment" to proceed with UPI verification</p></div>`;
+        } else if (method === 'netbanking') {
+            form.innerHTML = `<div class="form-group"><label>Select Bank</label><select style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;"><option>Choose your bank</option><option>State Bank of India (SBI)</option><option>HDFC Bank</option><option>ICICI Bank</option><option>Axis Bank</option><option>Punjab National Bank</option></select></div><div style="text-align: center; padding: 20px; background: #f0f5ff; border-radius: 5px; margin: 15px 0;"><p style="margin: 0; color: #666;">You will be redirected to your bank's website</p></div>`;
+        }
+    }
+
+    function processPayment() {
+        const selectedMethod = document.querySelector('input[name="payment"]:checked').value;
+        alert(`✅ Payment of ₹499 processed via ${selectedMethod.toUpperCase()}!\n\nCourse access activated. Enjoy your learning!`);
+        closePaymentModal();
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('paymentModal');
+        if (event.target == modal) {
+            closePaymentModal();
+        }
+    }
+
+    loadModules();
+    updateProgress();
+    loadLesson(0, 0);
+</script>
+</body>
+</html>

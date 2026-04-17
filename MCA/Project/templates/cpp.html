@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Course</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .modules-container {
+            background: #f9f9f9;
+            border-radius: 12px;
+            border: 3px solid #00599c;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        .module-card {
+            margin: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .module-header {
+            padding: 15px;
+            background: #00599c;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .module-header:hover {
+            background: #004d7a;
+        }
+        .toggle-icon {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+        .lessons-container {
+            padding: 15px;
+        }
+        .lesson-btn {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            border: 2px solid #00599c;
+            color: #00599c;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .lesson-btn:hover {
+            background: #e6f3ff;
+            transform: translateX(5px);
+        }
+        .lesson-btn.completed {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        .progress-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .progress-bar-bg {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00599c, #007acc);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-weight: bold;
+        }
+        .lesson-display {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            border-left: 5px solid #00599c;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-height: 500px;
+        
+            padding: 20px;
+            border-left: 5px solid #00599c;
+        }
+        .notes-display h4 {
+            color: #00599c;
+            margin-bottom: 15px;
+        }
+        .subscribe-btn {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .subscribe-btn:hover {
+            background: #218838;
+        }
+        .payment-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .payment-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #00599c;
+            padding-bottom: 15px;
+        }
+        .modal-header h2 {
+            color: #00599c;
+            margin: 0;
+        }
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #000;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .payment-methods {
+            margin-bottom: 20px;
+        }
+        .payment-method {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .payment-method input {
+            margin-right: 10px;
+            width: auto;
+        }
+        .payment-method.selected {
+            border-color: #00599c;
+            background: #f0f5ff;
+        }
+        .pay-button {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .pay-button:hover {
+            background: #218838;
+        }
+        .price-display {
+            text-align: center;
+            font-size: 18px;
+            color: #00599c;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f0f5ff;
+            border-radius: 5px;
+        }
+        .price-display strong {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- HEADER -->
+<header class="subject-header" style="background: linear-gradient(135deg, #00599c 0%, #004c97 100%);">
+    <div class="header-container">
+        <div class="header-left">
+            <h3 class="academic-name">⚡ C++ Programming</h3>
+        </div>
+        <div class="header-right">
+            <button class="subscribe-btn" onclick="openPaymentModal()">Enroll Now</button>
+            <a href="/dashboard" class="btn btn-light" style="margin-left: 10px;">← Back</a>
+        </div>
+    </div>
+</header>
+
+<!-- CONTENT -->
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <!-- MODULES SIDEBAR -->
+        <div class="col-md-4">
+            <h5 class="mb-3">📚 Course Modules</h5>
+            <div class="modules-container" id="modulesContainer">
+                <!-- Modules will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- LESSON DISPLAY -->
+        <div class="col-md-8">
+            <div class="progress-container mb-4">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressBar"></div>
+                </div>
+                <div class="progress-text" id="progressText">0/30 lessons completed</div>
+            </div>
+            <div class="lesson-display" id="lessonDisplay">
+                <h4 id="lessonTitle">Lesson Title</h4>
+                <div id="lessonContent">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="padding: 200px;" id="paymentModal" class="payment-modal">
+    <div class="modal-content">
+        <div class="modal-header"><h2>Enroll in C++ Programming Course</h2><span class="close" onclick="closePaymentModal()">&times;</span></div>
+        <div class="price-display">Course Price: <strong>₹499</strong> / One-time payment</div>
+        <div class="payment-methods">
+            <h5>Select Payment Method:</h5>
+            <label class="payment-method"><input type="radio" name="payment" value="credit" checked onchange="selectPayment('credit')">💳 Credit Card</label>
+            <label class="payment-method"><input type="radio" name="payment" value="debit" onchange="selectPayment('debit')">🏦 Debit Card</label>
+            <label class="payment-method"><input type="radio" name="payment" value="upi" onchange="selectPayment('upi')">📱 UPI</label>
+            <label class="payment-method"><input type="radio" name="payment" value="netbanking" onchange="selectPayment('netbanking')">🏧 Net Banking</label>
+        </div>
+        <div id="paymentForm"></div>
+        <button class="pay-button" onclick="processPayment()">Complete Payment</button>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const cppModules = [
+        {
+            title: "Introduction to C++",
+            lessons: [
+                {title: "Introduction to C++", content: "Introduction to C++\n- History of C++\n- C vs C++\n- Features of C++\n- Setting up environment\n- First C++ program"},
+                {title: "Basics & Variables", content: "Basics & Variables\n- Cin and cout\n- Variable declaration\n- Data types\n- Namespace std\n- Comments"},
+                {title: "Operators", content: "Operators\n- Arithmetic operators\n- Comparison operators\n- Logical operators\n- Bitwise operators\n- Operator precedence"}
+            ]
+        },
+        {
+            title: "Control Flow & Loops",
+            lessons: [
+                {title: "Control Flow", content: "Control Flow\n- if-else statements\n- switch case\n- Ternary operator\n- Loop statements\n- Nested control structures"},
+                {title: "Loops", content: "Loops\n- for loop\n- while loop\n- do-while loop\n- Nested loops\n- break and continue"}
+            ]
+        },
+        {
+            title: "Functions",
+            lessons: [
+                {title: "Functions - Part 1", content: "Functions - Part 1\n- Function declaration\n- Function definition\n- Function call\n- Parameters\n- Return values"},
+                {title: "Functions - Part 2", content: "Functions - Part 2\n- Default parameters\n- Function overloading\n- Inline functions\n- Recursion\n- Pass by value/reference"}
+            ]
+        },
+        {
+            title: "Arrays, Strings & Pointers",
+            lessons: [
+                {title: "Arrays & Strings", content: "Arrays & Strings\n- Array declaration\n- Array initialization\n- Multi-dimensional arrays\n- String class\n- String functions"},
+                {title: "Pointers", content: "Pointers\n- Pointer declaration\n- Address operator\n- Dereference operator\n- Pointer arithmetic\n- Array pointers"},
+                {title: "Dynamic Memory", content: "Dynamic Memory\n- new operator\n- delete operator\n- Dynamic arrays\n- Pointer dereferencing\n- Memory management"}
+            ]
+        },
+        {
+            title: "Object-Oriented Programming",
+            lessons: [
+                {title: "Objects & Classes - Part 1", content: "Objects & Classes - Part 1\n- Class definition\n- Data members\n- Member functions\n- Access specifiers\n- Creating objects"},
+                {title: "Objects & Classes - Part 2", content: "Objects & Classes - Part 2\n- Constructors\n- Destructors\n- this pointer\n- Function overloading\n- Inline member functions"},
+                {title: "Encapsulation", content: "Encapsulation\n- Public, private, protected\n- Getters and setters\n- Data hiding\n- Abstraction\n- Best practices"}
+            ]
+        },
+        {
+            title: "Inheritance & Polymorphism",
+            lessons: [
+                {title: "Inheritance - Part 1", content: "Inheritance - Part 1\n- Single inheritance\n- Base and derived class\n- Access specifiers\n- Constructor in inheritance\n- super keyword equivalent"},
+                {title: "Inheritance - Part 2", content: "Inheritance - Part 2\n- Multi-level inheritance\n- Multiple inheritance\n- Ambiguity resolution\n- Diamond problem\n- Virtual inheritance"},
+                {title: "Virtual Functions", content: "Virtual Functions\n- Virtual function declaration\n- Function overriding\n- Polymorphism\n- Pure virtual functions\n- Abstract classes"}
+            ]
+        },
+        {
+            title: "Advanced Features",
+            lessons: [
+                {title: "Operator Overloading - Part 1", content: "Operator Overloading - Part 1\n- Overloading + operator\n- Overloading () operator\n- Overloading [] operator\n- Binary operators\n- Friend functions"},
+                {title: "Operator Overloading - Part 2", content: "Operator Overloading - Part 2\n- Unary operators\n- Pre and post increment\n- Stream operators (<<, >>)\n- Assignment operator\n- Comparison operators"},
+                {title: "Friend Functions & Classes", content: "Friend Functions & Classes\n- Friend function\n- Friend class\n- Global friend\n- Access privileges\n- Use cases"},
+                {title: "Static Members", content: "Static Members\n- Static data members\n- Static member functions\n- Class variables\n- Initialization\n- Use cases"}
+            ]
+        },
+        {
+            title: "Templates & STL",
+            lessons: [
+                {title: "Constant Objects", content: "Constant Objects\n- Const objects\n- Const member functions\n- Const references\n- Const pointers\n- Benefits"},
+                {title: "Templates - Part 1", content: "Templates - Part 1\n- Function templates\n- Template declaration\n- Template syntax\n- Template parameters\n- Generic programming"},
+                {title: "Templates - Part 2", content: "Templates - Part 2\n- Class templates\n- Template specialization\n- Non-type parameters\n- Template instantiation\n- Advantages"},
+                {title: "Standard Template Library", content: "Standard Template Library\n- Vector container\n- List container\n- Map and set\n- Queue and stack\n- Iterator basics"}
+            ]
+        },
+        {
+            title: "File I/O & Exception Handling",
+            lessons: [
+                {title: "STL Algorithms", content: "STL Algorithms\n- sort() function\n- search() function\n- Transform algorithm\n- Algorithm functions\n- Lambda expressions"},
+                {title: "File I/O", content: "File I/O\n- ifstream class\n- ofstream class\n- fstream class\n- File operations\n- Output formatting"},
+                {title: "Exception Handling", content: "Exception Handling\n- try block\n- catch block\n- throw statement\n- Exception classes\n- Standard exceptions"},
+                {title: "Name Spaces", content: "Name Spaces\n- Namespace declaration\n- Using namespace\n- Namespace scope\n- Nested namespaces\n- Best practices"}
+            ]
+        },
+        {
+            title: "Review & Advanced Concepts",
+            lessons: [
+                {title: "Advanced Concepts", content: "Advanced Concepts\n- RTTI (Run Time Type Info)\n- type_id() function\n- Const casting\n- Type casting\n- Move semantics"},
+                {title: "Review & Project", content: "Review & Project\n- Design patterns\n- STL review\n- Best practices\n- Code optimization\n- Career guidance"}
+            ]
+        }
+    ];
+
+    let completedLessons = JSON.parse(localStorage.getItem('cppProgress') || '[]');
+
+    function loadModules() {
+        const container = document.getElementById('modulesContainer');
+        cppModules.forEach((module, moduleIndex) => {
+            const moduleDiv = document.createElement('div');
+            moduleDiv.className = 'module-card';
+            moduleDiv.innerHTML = `
+                <div class="module-header" onclick="toggleModule(${moduleIndex})">
+                    <h6>${module.title}</h6>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="lessons-container" id="lessons-${moduleIndex}" style="display: none;">
+                    ${module.lessons.map((lesson, lessonIndex) => `
+                        <button class="lesson-btn ${completedLessons.includes(`${moduleIndex}-${lessonIndex}`) ? 'completed' : ''}" onclick="loadLesson(${moduleIndex}, ${lessonIndex})">
+                            ${lesson.title}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(moduleDiv);
+        });
+    }
+
+    function toggleModule(moduleIndex) {
+        const lessonsDiv = document.getElementById(`lessons-${moduleIndex}`);
+        const icon = lessonsDiv.previousElementSibling.querySelector('.toggle-icon');
+        if (lessonsDiv.style.display === 'none') {
+            lessonsDiv.style.display = 'block';
+            icon.textContent = '▼';
+        } else {
+            lessonsDiv.style.display = 'none';
+            icon.textContent = '▶';
+        }
+    }
+
+    function loadLesson(moduleIndex, lessonIndex) {
+        const lesson = cppModules[moduleIndex].lessons[lessonIndex];
+        document.getElementById('lessonTitle').textContent = lesson.title;
+        document.getElementById('lessonContent').innerHTML = lesson.content.replace(/\n/g, '<br>');
+        
+        // Mark as completed
+        const lessonId = `${moduleIndex}-${lessonIndex}`;
+        if (!completedLessons.includes(lessonId)) {
+            completedLessons.push(lessonId);
+            localStorage.setItem('cppProgress', JSON.stringify(completedLessons));
+            updateProgress();
+            // Update button
+            const btn = document.querySelector(`[onclick="loadLesson(${moduleIndex}, ${lessonIndex})"]`);
+            btn.classList.add('completed');
+        }
+    }
+
+    function updateProgress() {
+        const totalLessons = cppModules.reduce((sum, module) => sum + module.lessons.length, 0);
+        const progressPercent = (completedLessons.length / totalLessons) * 100;
+        document.getElementById('progressBar').style.width = progressPercent + '%';
+        document.getElementById('progressText').textContent = `${completedLessons.length}/${totalLessons} lessons completed`;
+    }
+
+    function openPaymentModal() {
+        document.getElementById('paymentModal').classList.add('show');
+        selectPayment('credit');
+    }
+
+    function closePaymentModal() {
+        document.getElementById('paymentModal').classList.remove('show');
+    }
+
+    function selectPayment(method) {
+        const form = document.getElementById('paymentForm');
+        if (method === 'credit' || method === 'debit') {
+            form.innerHTML = `<div class="form-group"><label>Cardholder Name</label><input type="text" placeholder="Enter name on card" required></div><div class="form-group"><label>Card Number</label><input type="text" placeholder="1234 5678 9012 3456" maxlength="19" required></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="form-group"><label>Expiry Date</label><input type="text" placeholder="MM/YY" maxlength="5" required></div><div class="form-group"><label>CVV</label><input type="text" placeholder="123" maxlength="3" required></div></div>`;
+        } else if (method === 'upi') {
+            form.innerHTML = `<div class="form-group"><label>UPI ID</label><input type="text" placeholder="yourname@bank" required></div><div style="text-align: center; padding: 20px; background: #f0f5ff; border-radius: 5px; margin: 15px 0;"><p style="margin: 0; color: #666;">Click "Complete Payment" to proceed with UPI verification</p></div>`;
+        } else if (method === 'netbanking') {
+            form.innerHTML = `<div class="form-group"><label>Select Bank</label><select style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;"><option>Choose your bank</option><option>State Bank of India (SBI)</option><option>HDFC Bank</option><option>ICICI Bank</option><option>Axis Bank</option><option>Punjab National Bank</option></select></div><div style="text-align: center; padding: 20px; background: #f0f5ff; border-radius: 5px; margin: 15px 0;"><p style="margin: 0; color: #666;">You will be redirected to your bank's website</p></div>`;
+        }
+    }
+
+    function processPayment() {
+        const selectedMethod = document.querySelector('input[name="payment"]:checked').value;
+        alert(`✅ Payment of ₹499 processed via ${selectedMethod.toUpperCase()}!\n\nCourse access activated. Enjoy your learning!`);
+        closePaymentModal();
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('paymentModal');
+        if (event.target == modal) {
+            closePaymentModal();
+        }
+    }
+
+    loadModules();
+    updateProgress();
+    loadLesson(0, 0);
+</script>
+</body>
+</html>

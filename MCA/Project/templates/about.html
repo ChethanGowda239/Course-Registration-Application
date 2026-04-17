@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>About Us - Course Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+        
+        main {
+            flex: 1;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white !important;
+            text-decoration: none;
+        }
+
+        /* From Uiverse.io by Cevorob */
+        .burger {
+            position: relative;
+            width: 40px;
+            height: 30px;
+            background: transparent;
+            cursor: pointer;
+            display: block;
+        }
+
+        .burger input {
+            display: none;
+        }
+
+        .burger span {
+            display: block;
+            position: absolute;
+            height: 4px;
+            width: 100%;
+            background: white;
+            border-radius: 9px;
+            opacity: 1;
+            left: 0;
+            transform: rotate(0deg);
+            transition: .25s ease-in-out;
+        }
+
+        .burger span:nth-of-type(1) {
+            top: 0px;
+            transform-origin: left center;
+        }
+
+        .burger span:nth-of-type(2) {
+            top: 50%;
+            transform: translateY(-50%);
+            transform-origin: left center;
+        }
+
+        .burger span:nth-of-type(3) {
+            top: 100%;
+            transform-origin: left center;
+            transform: translateY(-100%);
+        }
+
+        .burger input:checked ~ span:nth-of-type(1) {
+            transform: rotate(45deg);
+            top: 0px;
+            left: 5px;
+        }
+
+        .burger input:checked ~ span:nth-of-type(2) {
+            width: 0%;
+            opacity: 0;
+        }
+
+        .burger input:checked ~ span:nth-of-type(3) {
+            transform: rotate(-45deg);
+            top: 28px;
+            left: 5px;
+        }
+
+        .nav-menu {
+            display: none;
+            position: absolute;
+            top: 70px;
+            right: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 200px;
+            z-index: 1000;
+        }
+
+        .burger input:checked ~ .nav-menu {
+            display: block;
+        }
+
+        .nav-menu a {
+            display: block;
+            padding: 12px 20px;
+            color: white !important;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        .nav-menu a:hover {
+            opacity: 0.8;
+        }
+
+        .about-section {
+            background-color: #f8f9fa;
+            padding: 80px 40px;
+        }
+
+        .about-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .about-section h2 {
+            color: #667eea;
+            margin-bottom: 50px;
+            font-weight: bold;
+            font-size: 2.5rem;
+            text-align: center;
+        }
+
+        .about-section h3 {
+            color: #333;
+            font-weight: bold;
+            font-size: 1.8rem;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .about-section p {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .about-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .about-column {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .about-column h4 {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .about-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 100px 60px 40px 60px;
+            margin-top: auto;
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: white;
+            transform: skewY(-2deg);
+            z-index: 0;
+        }
+
+        .footer-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-tagline {
+            color: #95a5a6;
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .footer-social a {
+            color: #95a5a6;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+
+        .footer-social a:hover {
+            color: #667eea;
+        }
+
+        .footer-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .footer-column h4 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-column ul li a {
+            color: #95a5a6;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-column ul li a:hover {
+            color: #667eea;
+        }
+
+        .footer-column p {
+            color: #95a5a6;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .footer-contact {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: #95a5a6;
+        }
+
+        .footer-contact-icon {
+            font-size: 1.3rem;
+            color: #667eea;
+        }
+
+        .footer-subscribe {
+            display: flex;
+            gap: 10px;
+        }
+
+        .footer-subscribe input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 5px;
+            background: white;
+            color: #333;
+        }
+
+        .footer-subscribe button {
+            padding: 12px 25px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .footer-subscribe button:hover {
+            background: #ff5722;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 30px;
+            border-top: 1px solid #34495e;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-bottom p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVIGATION BAR -->
+<nav class="navbar">
+    <a class="navbar-brand" href="/">Course management system</a>
+    <label class="burger" for="burger">
+        <input type="checkbox" id="burger">
+        <span></span>
+        <span></span>
+        <span></span>
+        <div class="nav-menu">
+            <a href="/">Home</a>
+            <a href="/register">Register</a>
+            <a href="/student_login">Student Login</a>
+            <a href="/admin_login">Admin Login</a>
+            <a href="/about">About Us</a>
+        </div>
+    </label>
+</nav>
+
+<main>
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="container mt-3">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show">
+              {{ message }}
+              <button class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- ABOUT US SECTION -->
+    <section class="about-section">
+        <div class="about-container">
+            <h2>About Us</h2>
+
+            <div class="about-row">
+                <div class="about-column">
+                    <h4>Our Mission</h4>
+                    <p>
+                        Our Course Management System is designed to provide students with a seamless learning experience. 
+                        We offer a wide range of courses in technology, business, and personal development.
+                    </p>
+                    <p>
+                        Whether you're a beginner looking to start your journey or an experienced professional seeking to expand your skills, 
+                        we have the right course for you.
+                    </p>
+                </div>
+                <div class="about-column">
+                    <h4>Why Choose Us</h4>
+                    <p>
+                        With our easy-to-use platform, interactive lessons, and dedicated support team, 
+                        you'll have everything you need to succeed.
+                    </p>
+                    <p>
+                        Join thousands of students who have transformed their careers through our courses. 
+                        Start learning today and achieve your goals!
+                    </p>
+                </div>
+            </div>
+
+            <h3>Our Values</h3>
+            <p>
+                We believe in empowering individuals through quality education. Our platform combines cutting-edge technology 
+                with expert instruction to create an engaging and effective learning environment. We are committed to:
+            </p>
+            <ul style="font-size: 1.1rem; color: #555; line-height: 1.8;">
+                <li><strong>Quality Education:</strong> Providing comprehensive and up-to-date course material</li>
+                <li><strong>Expert Instructors:</strong> Learning from industry professionals with real-world experience</li>
+                <li><strong>Student Success:</strong> Supporting every student in achieving their goals</li>
+                <li><strong>Continuous Innovation:</strong> Constantly updating our platform and courses</li>
+                <li><strong>Community Support:</strong> Building a vibrant community of learners</li>
+            </ul>
+        </div>
+    </section>
+</main>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-top">
+            <div>
+                <div class="footer-logo">📚 Course Management</div>
+                <p class="footer-tagline">Simply the best learning platform</p>
+            </div>
+            <div class="footer-social">
+                <a href="#" title="Facebook">f</a>
+                <a href="#" title="Twitter">𝕏</a>
+                <a href="#" title="LinkedIn">in</a>
+                <a href="#" title="Instagram">📷</a>
+                <a href="#" title="YouTube">▶</a>
+            </div>
+        </div>
+
+        <div class="footer-columns">
+            <div class="footer-column">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/register">Register</a></li>
+                    <li><a href="/student_login">Login</a></li>
+                    <li><a href="/about">About Us</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4>Contact Us</h4>
+                <div class="footer-contact">
+                    <span class="footer-contact-icon">📍</span>
+                    <p>123 Learning Street,<br>Education City, ED 12345</p>
+                </div>
+                <div class="footer-contact">
+                    <span class="footer-contact-icon">📱</span>
+                    <p>+1-800-LEARN-101</p>
+                </div>
+                <div class="footer-contact">
+                    <span class="footer-contact-icon">✉️</span>
+                    <p>support@coursemgmt.com</p>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h4>Stay Updated</h4>
+                <p>Subscribe to get the latest updates and special offers</p>
+                <div class="footer-subscribe">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="button">Sign up</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026. All rights reserved.</p>
+            <p>Designed with ❤️ for learners worldwide</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const burgerCheckbox = document.getElementById('burger');
+    const burgerLabel = document.querySelector('.burger');
+    const navLinks = document.querySelectorAll('.nav-menu a');
+
+    // Close menu when a navigation link is clicked
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            burgerCheckbox.checked = false;
+        });
+    });
+
+    // Close menu when clicking outside of the burger/menu area
+    document.addEventListener('click', function(event) {
+        // Check if the click is outside the burger menu
+        if (!burgerLabel.contains(event.target)) {
+            burgerCheckbox.checked = false;
+        }
+    });
+
+    // Prevent closing when clicking inside the burger element itself (except links)
+    burgerLabel.addEventListener('click', function(event) {
+        if (event.target.tagName === 'A') {
+            return;
+        }
+    });
+</script>
+
+</body>
+</html>

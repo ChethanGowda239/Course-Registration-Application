@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SQL - Course</title>
+    
+   
+    <style>
+        .modules-container {
+            background: #f9f9f9;
+            border-radius: 12px;
+            border: 3px solid #336791;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        .module-card {
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .module-header {
+            background: #336791;
+            color: white;
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .module-header:hover {
+            background: #2a5a7a;
+        }
+        .toggle-icon {
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+        .lessons-container {
+            padding: 10px;
+        }
+        .lesson-btn {
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            background: white;
+            border: 2px solid #336791;
+            color: #336791;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        .lesson-btn:hover {
+            background: #336791;
+            color: white;
+        }
+        .lesson-btn.completed {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+        .progress-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .progress-bar-bg {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #336791, #4a90e2);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-weight: bold;
+        }
+        .lesson-display {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            border-left: 5px solid #336791;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+        .subscribe-btn {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .subscribe-btn:hover {
+            background: #218838;
+        }
+        .payment-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .payment-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #336791;
+            padding-bottom: 15px;
+        }
+        .modal-header h2 {
+            color: #336791;
+            margin: 0;
+        }
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #000;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .payment-methods {
+            margin-bottom: 20px;
+        }
+        .payment-method {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .payment-method input {
+            margin-right: 10px;
+            width: auto;
+        }
+        .payment-method.selected {
+            border-color: #336791;
+            background: #f0f4ff;
+        }
+        .pay-button {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .pay-button:hover {
+            background: #218838;
+        }
+        .price-display {
+            text-align: center;
+            font-size: 18px;
+            color: #336791;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f0f4ff;
+            border-radius: 5px;
+        }
+        .price-display strong {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- HEADER -->
+<header class="subject-header" style="background: linear-gradient(135deg, #336791 0%, #153652 100%);">
+    <div class="header-container">
+        <div class="header-left">
+            <h3 class="academic-name">🗄️ SQL Database</h3>
+        </div>
+        <div class="header-right">
+            <button class="subscribe-btn" onclick="openPaymentModal()">Enroll Now</button>
+            <a href="/dashboard" class="btn btn-light" style="margin-left: 10px;">← Back</a>
+        </div>
+    </div>
+</header>
+
+<!-- CONTENT -->
+<div class="container mt-5 mb-5">
+    <!-- Progress Bar -->
+    <div class="progress mb-4" style="height: 25px;">
+        <div class="progress-bar bg-success" role="progressbar" style="width: 0%;" id="progressBar"></div>
+    </div>
+    <div class="text-center mb-3" id="progressText">0/30 lessons completed</div>
+
+    <div class="row">
+        <!-- MODULES SIDEBAR -->
+        <div class="col-md-4">
+            <h5 class="mb-3">📚 Course Modules</h5>
+            <div class="modules-container" id="modulesContainer">
+                <!-- Modules will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- LESSON DISPLAY -->
+        <div class="col-md-8">
+            <div class="progress-container mb-4">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressBar"></div>
+                </div>
+                <div class="progress-text" id="progressText">0/30 lessons completed</div>
+            </div>
+            <div class="lesson-display" id="lessonDisplay">
+                <h4 id="lessonTitle">Lesson Title</h4>
+                <div id="lessonContent">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- PAYMENT MODAL -->
+<div id="paymentModal" class="payment-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Enroll in SQL Course</h2>
+            <span class="close" onclick="closePaymentModal()">&times;</span>
+        </div>
+        <div class="price-display">
+            Course Price: <strong>₹499</strong> / One-time payment
+        </div>
+        <div class="payment-methods">
+            <h5>Select Payment Method:</h5>
+            <label class="payment-method">
+                <input type="radio" name="payment" value="credit" checked onchange="selectPayment('credit')">
+                💳 Credit Card
+            </label>
+            <label class="payment-method">
+                <input type="radio" name="payment" value="debit" onchange="selectPayment('debit')">
+                🏦 Debit Card
+            </label>
+            <label class="payment-method">
+                <input type="radio" name="payment" value="upi" onchange="selectPayment('upi')">
+                📱 UPI
+            </label>
+            <label class="payment-method">
+                <input type="radio" name="payment" value="netbanking" onchange="selectPayment('netbanking')">
+                🏧 Net Banking
+            </label>
+        </div>
+        <div id="paymentForm"></div>
+        <button class="pay-button" onclick="processPayment()">Complete Payment</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const sqlModules = [
+        {
+            title: "SQL Fundamentals",
+            lessons: [
+                {title: "Introduction to SQL", content: "Introduction to SQL\n- What is SQL?\n- What is a Database?\n- Relational databases\n- SQL vs NoSQL\n- Database management systems"},
+                {title: "Database Basics", content: "Database Basics\n- Tables, rows, columns\n- Primary keys\n- Foreign keys\n- Schemas and databases\n- Data types"},
+                {title: "SELECT Statement", content: "SELECT Statement\n- Basic SELECT syntax\n- Selecting all columns (*)\n- Selecting specific columns\n- Column aliases\n- DISTINCT keyword"},
+                {title: "WHERE Clause", content: "WHERE Clause\n- Filtering data\n- Comparison operators\n- Logical operators (AND, OR, NOT)\n- IN and BETWEEN\n- Null checks (IS NULL)"},
+                {title: "LIKE and Wildcards", content: "LIKE and Wildcards\n- Pattern matching\n- % wildcard\n- _ wildcard\n- Escape characters\n- Case sensitivity"},
+                {title: "ORDER BY", content: "ORDER BY\n- Sorting in ascending order\n- Sorting in descending order\n- Multiple column sorting\n- LIMIT clause\n- OFFSET clause"},
+                {title: "Aggregate Functions", content: "Aggregate Functions\n- COUNT() function\n- SUM() function\n- AVG() function\n- MIN() and MAX()\n- NULL handling"},
+                {title: "GROUP BY Clause", content: "GROUP BY Clause\n- Grouping results\n- GROUP BY with aggregates\n- HAVING clause\n- Multiple grouping columns\n- Filtering groups"}
+            ]
+        },
+        {
+            title: "Joins and Subqueries",
+            lessons: [
+                {title: "INNER JOIN", content: "INNER JOIN\n- Join concept\n- INNER JOIN syntax\n- ON condition\n- Join multiple tables\n- Ambiguous column names"},
+                {title: "LEFT & RIGHT JOIN", content: "LEFT & RIGHT JOIN\n- LEFT OUTER JOIN\n- RIGHT OUTER JOIN\n- Null handling\n- Using aliases\n- Practical examples"},
+                {title: "FULL JOIN & Self Join", content: "FULL JOIN & Self Join\n- FULL OUTER JOIN\n- Table aliases for self joins\n- Practical self join examples\n- Cross join\n- Using multiple joins"},
+                {title: "Subqueries - Part 1", content: "Subqueries - Part 1\n- Scalar subqueries\n- Subqueries in WHERE\n- IN and EXISTS\n- Correlated subqueries\n- NOT IN and NOT EXISTS"},
+                {title: "Subqueries - Part 2", content: "Subqueries - Part 2\n- Subqueries in FROM clause\n- Subqueries in SELECT\n- Union and Union All\n- Except and Intersect\n- Performance considerations"},
+                {title: "INSERT Statement", content: "INSERT Statement\n- INSERT INTO syntax\n- Inserting single row\n- Inserting multiple rows\n- Column order\n- Default values"},
+                {title: "UPDATE Statement", content: "UPDATE Statement\n- UPDATE syntax\n- WHERE condition\n- Updating multiple columns\n- Updating with expressions\n- Bulk updates"},
+                {title: "DELETE Statement", content: "DELETE Statement\n- DELETE syntax\n- Deleting with conditions\n- Deleting all rows\n- Truncate vs Delete\n- Careful deletion"}
+            ]
+        },
+        {
+            title: "Database Design",
+            lessons: [
+                {title: "CREATE TABLE", content: "CREATE TABLE\n- Table creation syntax\n- Column definitions\n- Constraints\n- Primary keys\n- Default values"},
+                {title: "Constraints", content: "Constraints\n- PRIMARY KEY\n- UNIQUE constraint\n- NOT NULL\n- CHECK constraint\n- FOREIGN KEY"},
+                {title: "ALTER TABLE", content: "ALTER TABLE\n- Adding columns\n- Dropping columns\n- Renaming columns\n- Modifying columns\n- Constraints modification"},
+                {title: "Indexes", content: "Indexes\n- Creating indexes\n- Index types\n- Unique indexes\n- Composite indexes\n- Dropping indexes"},
+                {title: "Views", content: "Views\n- Creating views\n- Simple and complex views\n- Updating views\n- Dropping views\n- Advantages of views"},
+                {title: "Transactions", content: "Transactions\n- Begin, Commit, Rollback\n- ACID properties\n- Transaction isolation\n- Lock mechanisms\n- Best practices"},
+                {title: "Functions", content: "Functions\n- String functions\n- Date functions\n- Numeric functions\n- Conditional functions\n- Custom functions"},
+                {title: "Window Functions", content: "Window Functions\n- ROW_NUMBER()\n- RANK() and DENSE_RANK()\n- LAG() and LEAD()\n- Aggregate window functions\n- PARTITION BY"}
+            ]
+        },
+        {
+            title: "Advanced SQL",
+            lessons: [
+                {title: "Stored Procedures", content: "Stored Procedures\n- Creating procedures\n- Input and output parameters\n- Control structures\n- Error handling\n- Executing procedures"},
+                {title: "Triggers", content: "Triggers\n- Creating triggers\n- BEFORE and AFTER triggers\n- FOR EACH ROW\n- Trigger body\n- Use cases"},
+                {title: "Normalization", content: "Normalization\n- 1NF, 2NF, 3NF\n- Denormalization\n- Database design principles\n- Practical examples\n- Avoiding anomalies"},
+                {title: "Query Optimization", content: "Query Optimization\n- Execution plans\n- Index usage\n- Query hints\n- Query rewriting\n- Performance tuning"},
+                {title: "Security", content: "Security\n- User permissions\n- GRANT and REVOKE\n- Row-level security\n- Encryption\n- SQL injection prevention"},
+                {title: "Review & Best Practices", content: "Review & Best Practices\n- SQL style guide\n- Performance guidelines\n- Security best practices\n- Database design checklist\n- Career paths"}
+            ]
+        }
+    ];
+
+    let completedLessons = JSON.parse(localStorage.getItem('sqlProgress') || '[]');
+
+    function loadModules() {
+        const container = document.getElementById('modulesContainer');
+        sqlModules.forEach((module, moduleIndex) => {
+            const moduleDiv = document.createElement('div');
+            moduleDiv.className = 'module-card';
+            moduleDiv.innerHTML = `
+                <div class="module-header" onclick="toggleModule(${moduleIndex})">
+                    <h6>${module.title}</h6>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="lessons-container" id="lessons-${moduleIndex}" style="display: none;">
+                    ${module.lessons.map((lesson, lessonIndex) => `
+                        <button class="lesson-btn ${completedLessons.includes(`${moduleIndex}-${lessonIndex}`) ? 'completed' : ''}" onclick="loadLesson(${moduleIndex}, ${lessonIndex})">
+                            ${lesson.title}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(moduleDiv);
+        });
+    }
+
+    function toggleModule(moduleIndex) {
+        const lessonsDiv = document.getElementById(`lessons-${moduleIndex}`);
+        const icon = lessonsDiv.previousElementSibling.querySelector('.toggle-icon');
+        if (lessonsDiv.style.display === 'none') {
+            lessonsDiv.style.display = 'block';
+            icon.textContent = '▼';
+        } else {
+            lessonsDiv.style.display = 'none';
+            icon.textContent = '▶';
+        }
+    }
+
+    function loadLesson(moduleIndex, lessonIndex) {
+        const lesson = sqlModules[moduleIndex].lessons[lessonIndex];
+        document.getElementById('lessonTitle').textContent = lesson.title;
+        document.getElementById('lessonContent').innerHTML = lesson.content.replace(/\n/g, '<br>');
+        
+        // Mark as completed
+        const lessonId = `${moduleIndex}-${lessonIndex}`;
+        if (!completedLessons.includes(lessonId)) {
+            completedLessons.push(lessonId);
+            localStorage.setItem('sqlProgress', JSON.stringify(completedLessons));
+            updateProgress();
+            // Update button
+            const btn = document.querySelector(`[onclick="loadLesson(${moduleIndex}, ${lessonIndex})"]`);
+            btn.classList.add('completed');
+        }
+    }
+
+    function updateProgress() {
+        const totalLessons = sqlModules.reduce((sum, module) => sum + module.lessons.length, 0);
+        const progressPercent = (completedLessons.length / totalLessons) * 100;
+        document.getElementById('progressBar').style.width = progressPercent + '%';
+        document.getElementById('progressText').textContent = `${completedLessons.length}/${totalLessons} lessons completed`;
+    }
+
+    loadModules();
+    updateProgress();
+    loadLesson(0, 0);
+
+    function openPaymentModal() {
+        document.getElementById('paymentModal').classList.add('show');
+        selectPayment('credit');
+    }
+    function closePaymentModal() {
+        document.getElementById('paymentModal').classList.remove('show');
+    }
+    function selectPayment(method) {
+        const form = document.getElementById('paymentForm');
+        if (method === 'credit' || method === 'debit') {
+            form.innerHTML = `<div class="form-group"><label>Cardholder Name</label><input type="text" placeholder="Enter name on card" required></div><div class="form-group"><label>Card Number</label><input type="text" placeholder="1234 5678 9012 3456" maxlength="19" required></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="form-group"><label>Expiry Date</label><input type="text" placeholder="MM/YY" maxlength="5" required></div><div class="form-group"><label>CVV</label><input type="text" placeholder="123" maxlength="3" required></div></div>`;
+        } else if (method === 'upi') {
+            form.innerHTML = `<div class="form-group"><label>UPI ID</label><input type="text" placeholder="yourname@bank" required></div><div style="text-align: center; padding: 20px; background: #f0f5ff; border-radius: 5px; margin: 15px 0;"><p style="margin: 0; color: #666;">Click "Complete Payment" to proceed with UPI verification</p></div>`;
+        } else if (method === 'netbanking') {
+            form.innerHTML = `<div class="form-group"><label>Select Bank</label><select style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;"><option>Choose your bank</option><option>State Bank of India (SBI)</option><option>HDFC Bank</option><option>ICICI Bank</option><option>Axis Bank</option><option>Punjab National Bank</option></select></div><div style="text-align: center; padding: 20px; background: #f0f5ff; border-radius: 5px; margin: 15px 0;"><p style="margin: 0; color: #666;">You will be redirected to your bank's website</p></div>`;
+        }
+    }
+    function processPayment() {
+        const selectedMethod = document.querySelector('input[name="payment"]:checked').value;
+        alert(`✅ Payment of ₹499 processed via ${selectedMethod.toUpperCase()}!\n\nCourse access activated. Enjoy your learning!`);
+        closePaymentModal();
+    }
+    window.onclick = function(event) {
+        const modal = document.getElementById('paymentModal');
+        if (event.target == modal) closePaymentModal();
+    }
+</script>
+</body>
+</html>
